@@ -1,0 +1,37 @@
+# Contributor: Díaz Urbaneja Diego <sodomon2@gmail.com>
+# Maintainer: Díaz Urbaneja Diego <sodomon2@gmail.com>
+# QNX Maintainer: Felix Xing <fxing@qnx.com>
+
+pkgname=libgme
+pkgver=0.6.4
+pkgrel=0
+pkgdesc="Video game music file emulation/playback library"
+url="https://github.com/libgme/game-music-emu"
+arch="all"
+license="LGPL-2.1-only"
+depends="zlib-ng libc++"
+makedepends="cmake clang ninja zlib-ng-dev libc++-dev"
+subpackages="$pkgname-dev"
+options="!check" # ctest not implemented
+source="https://github.com/libgme/game-music-emu/releases/download/${pkgver}/${pkgname}-${pkgver}-src.tar.gz
+    "
+
+build() {
+    # C++ packages will prefer clang due to SDP being unstable
+    CC=clang \
+    CXX=clang++ \
+    cmake -B build -G Ninja \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DBUILD_SHARED_LIBS=True \
+        -DCMAKE_BUILD_TYPE=None \
+        -DENABLE_UBSAN=OFF
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+}
+
+sha512sums="
+4c8c4ee31c767bdf1ef62fce8062d817caee442bcefdf7cd8114cc0168794aa2a29e84d5fb1848a415eb385b22459fcfad3df7007a7a39801da8ac7c53f733af  libgme-0.6.4-src.tar.gz
+"
